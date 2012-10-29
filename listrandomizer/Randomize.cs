@@ -29,7 +29,7 @@ namespace listrandomizer
         public HttpResponseMessage Post(RandomizeModel model)
         {
             Random.Random r = new Random.Random();
-#if !DEBUG || TEST
+#if DEBUG || TEST
             r.UseLocalMode = true;
 #endif
             string[] value = model.list.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
