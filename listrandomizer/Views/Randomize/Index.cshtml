@@ -1,8 +1,8 @@
 ﻿@{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Split &amp; Randomize";
 }
 
-<h2>Index</h2>
+<h2>Split &amp; Randomize</h2>
 @Html.Label("numLists", "Number of Lists")
 @Html.TextBox("numLists")<br />
 <div id="source" style="width: 45%; float: left">
@@ -33,7 +33,7 @@
                         200: function (data) {
                             var output = "";
                             for (var i = 0; i < data.length; i++) {
-                                output += "--- LIST " + i + " ---\n";
+                                output += "--- LIST " + (i + 1) + " ---\n";
                                 for (var x = 0; x < data[i].length; x++) {
                                     output += data[i][x] + "\n";
                                 }
