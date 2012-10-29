@@ -16,11 +16,5 @@ namespace listrandomizer.Controllers
             return View();
         }
 
-        [HttpPost]
-        public JsonResult Index(int numLists, string list)
-        {
-            return Json(new Randomize().Post(numLists, list), JsonRequestBehavior.AllowGet);
-        }
-
     }
 }

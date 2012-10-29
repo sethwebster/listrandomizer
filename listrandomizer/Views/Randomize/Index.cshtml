@@ -3,10 +3,38 @@
 }
 
 <h2>Index</h2>
-
-@using (Html.BeginForm())
+@Html.Label("numLists", "Number of Lists")
+@Html.TextBox("numLists")<br />
+@Html.Label("list", "List (one item per line)")
+@Html.TextArea("list", new { style = "width:100%;height:300px" })
+<br />
+<button id="thebutton">Split &amp; Randomize</button>
+@section scripts
 {
-    @Html.TextBox("numLists")
-    @Html.TextArea("list")
-    <button type="submit"></button>
+    <script>
+        $(function () {
+            $("#thebutton").click(function () {
+                $.ajax({
+                    url: "/api/randomize",
+                    type: "POST",
+                    data: {
+                        numLists: $("#numLists").val(),
+                        list: $("#list").val()
+                    },
+                    statusCode: {
+                        200: function (data) {
+                            var output = "";
+                            for (var i = 0; i < data.length; i++) {
+                                output +="--- LIST "+i+" ---\n";
+                                for (var x = 0; x < data[i].length; x++) {
+                                    output += data[i][x] + "\n";
+                                }
+                            }
+                            $("#list").val(output);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
 }

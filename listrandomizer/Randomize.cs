@@ -7,7 +7,7 @@ using System.Web.Http;
 
 namespace listrandomizer
 {
-    public class Randomize : ApiController
+    public class RandomizeController : ApiController
     {
         // GET api/<controller>
         public IEnumerable<string> Get()
@@ -20,36 +20,56 @@ namespace listrandomizer
         {
             return "value";
         }
-
+        public class RandomizeModel
+        {
+            public int numLists { get; set; }
+            public string list { get; set; }
+        }
         // POST api/<controller>
-        public IEnumerable<string[]> Post(int numLists, string list)
+        public HttpResponseMessage Post(RandomizeModel model)
         {
             Random.Random r = new Random.Random();
 #if DEBUG || TEST
             r.UseLocalMode = true;
 #endif
-            string[] value = list.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-            List<string[]> lists = new List<string[]>();
-            int listContainerSize = (int)Math.Round((double)value.Length / numLists);
-            for (int i = 0; i < numLists; i++)
+            string[] value = model.list.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            List<List<string>> lists = new List<List<string>>();
+            int listContainerSize = (int)Math.Round((double)value.Length / model.numLists);
+            if (listContainerSize == 0)
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+
+            for (int i = 0; i < model.numLists; i++)
             {
-                lists.Add(new string[listContainerSize]);
+                lists.Add(new List<string>());
             }
-            Queue<string> todo = new Queue<string>(value);
-            while (todo.Count > 0)
+
+            ShuffleList(r, value);
+            SplitList(value, lists, listContainerSize);
+
+            return ControllerContext.Request.CreateResponse<IEnumerable<IEnumerable<string>>>(HttpStatusCode.OK, lists);
+        }
+
+        private static void SplitList(string[] value, List<List<string>> lists, int listContainerSize)
+        {
+            int listIndex = -1;
+            for (int i = 0; i < value.Length; i++)
             {
-                var item = todo.Dequeue();
-                int listIndex = 0;
-                int position = 0;
-                do
-                {
-                    listIndex = r.Next(0, numLists);
-                    position = r.Next(0, listContainerSize);
-                }
-                while (!string.IsNullOrEmpty(lists[listIndex][position]));
-                lists[listIndex][position] = item;
+                if (i % listContainerSize == 0)
+                    listIndex++;
+                lists[listIndex].Add(value[i]);
             }
-            return lists;
+        }
+
+        private static void ShuffleList(Random.Random r, string[] value)
+        {
+            for (int i = 0; i < value.Length; i++)
+            {
+                int newPos = r.Next(0, value.Length);
+                string currVal = value[newPos];
+                value[newPos] = value[i];
+                value[i] = currVal;
+            }
+
         }
 
         // PUT api/<controller>/5
