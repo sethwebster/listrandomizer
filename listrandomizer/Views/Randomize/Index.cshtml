@@ -5,8 +5,16 @@
 <h2>Index</h2>
 @Html.Label("numLists", "Number of Lists")
 @Html.TextBox("numLists")<br />
-@Html.Label("list", "List (one item per line)")
-@Html.TextArea("list", new { style = "width:100%;height:300px" })
+<div id="source" style="width: 45%; float: left">
+    @Html.Label("list", "List (one item per line)")
+    @Html.TextArea("list", new { style = "width:100%;height:300px" })
+</div>
+
+<div id="destination" style="width: 45%; float: left; margin-left: 3%;">
+    @Html.Label("result", "Results")
+    @Html.TextArea("result", new { style = "width:100%;height:300px" })
+</div>
+<div class="clear-fix"></div>
 <br />
 <button id="thebutton">Split &amp; Randomize</button>
 @section scripts
@@ -25,12 +33,12 @@
                         200: function (data) {
                             var output = "";
                             for (var i = 0; i < data.length; i++) {
-                                output +="--- LIST "+i+" ---\n";
+                                output += "--- LIST " + i + " ---\n";
                                 for (var x = 0; x < data[i].length; x++) {
                                     output += data[i][x] + "\n";
                                 }
                             }
-                            $("#list").val(output);
+                            $("#result").val(output);
                         }
                     }
                 });

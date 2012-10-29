@@ -36,7 +36,7 @@ namespace listrandomizer
             List<List<string>> lists = new List<List<string>>();
             int listContainerSize = (int)Math.Round((double)value.Length / model.numLists);
             if (listContainerSize == 0)
-                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                throw new InvalidOperationException("You cannot have more lists than items"); 
 
             for (int i = 0; i < model.numLists; i++)
             {
@@ -51,12 +51,12 @@ namespace listrandomizer
 
         private static void SplitList(string[] value, List<List<string>> lists, int listContainerSize)
         {
-            int listIndex = -1;
+            int listIndex = 0;
             for (int i = 0; i < value.Length; i++)
             {
-                if (i % listContainerSize == 0)
-                    listIndex++;
                 lists[listIndex].Add(value[i]);
+                if (i > 0 && i % listContainerSize == 0)
+                    listIndex++;
             }
         }
 
