@@ -17,17 +17,30 @@
 <div class="clear-fix"></div>
 <br />
 <button id="thebutton">Split &amp; Randomize</button>
+<div id="message"></div>
 @section scripts
 {
     <script>
         $(function () {
             $("#thebutton").click(function () {
+                $("#message").text("");
+
+                $(this).text("Splitting...").attr("disabled", true);
                 $.ajax({
                     url: "/api/randomize",
                     type: "POST",
                     data: {
                         numLists: $("#numLists").val(),
                         list: $("#list").val()
+                    },
+                    error: function(data)
+                    {
+                        $("#thebutton").text("Split & Randomize").attr("disabled", false);
+                        var n = $.parseJSON(data.responseText);
+                        $("#message").text("Uh oh! " + n.Message+" : "+n.ExceptionMessage);
+                    },
+                    success: function(data){
+                        $("#thebutton").text("Split & Randomize").attr("disabled", false);
                     },
                     statusCode: {
                         200: function (data) {
